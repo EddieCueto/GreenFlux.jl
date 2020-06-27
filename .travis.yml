@@ -3,13 +3,10 @@ language: julia
 notifications:
   email: false
 julia:
-  - 1.0
   - 1.4
-  - nightly
 os:
   - linux
   - osx
-  - windows
 arch:
   - x64
 cache:
@@ -26,9 +23,3 @@ after_success:
       Pkg.add("Coverage")
       using Coverage
       Codecov.submit(process_folder())'
-  - |
-    julia -e '
-      using Pkg
-      Pkg.add("Coverage")
-      using Coverage
-      Coveralls.submit(process_folder())'
