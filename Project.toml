@@ -1,0 +1,13 @@
+name = "GreenFlux"
+uuid = "ccad5352-7643-4eb2-b711-e9c298e87bf0"
+authors = ["Eduardo Cueto Mendoza"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
