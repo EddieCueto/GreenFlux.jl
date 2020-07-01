@@ -22,7 +22,7 @@ jobs:
           - x64
           - x86
         allow-failure: [false]
-        include:
+        # include:
           # this is so verbose... any other way to simplify this ?
           # - version: 'nightly'
           #   os: ubuntu-latest
