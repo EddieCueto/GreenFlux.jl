@@ -20,10 +20,9 @@ jobs:
           # - windows-latest # TODO: test on Windows
         arch:
           - x64
-          - x86
+          # - x86
         allow-failure: [false]
         # include:
-          # this is so verbose... any other way to simplify this ?
           # - version: 'nightly'
           #   os: ubuntu-latest
           #   arch: x64
