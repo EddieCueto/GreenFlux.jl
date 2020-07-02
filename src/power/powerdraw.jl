@@ -1,3 +1,15 @@
+struct NoNvidiaSMI <: Exception
+    var::Symbol
+end
+
+Base.showerror(io::IO, e::NoNvidiaSMI) = print(io, e.var)
+
+struct NoPowerStat <: Exception
+    var::Symbol
+end
+
+Base.showerror(io::IO, e::NoPowerStat) = print(io, e.var)
+
 """
     gpupowerdraw()::Float64
 
@@ -57,7 +69,7 @@ function gpupowerdraw()
         end
         return nogpus, mean(usage), mean(cap)
     else
-        @info "This computer does not have acces to a GPU passing to CPU and RAM computations"
+        throw(NoNvidiaSMI("there is no nvidia-smi installed")) #@info "This computer does not have acces to a GPU passing to CPU and RAM computations"
     end
 end
 
@@ -68,17 +80,17 @@ end
 This function uses the Linux `powerstat` utility to get the average CPU energy cost.
 """
 function cpupowerdraw()
-    cpucommand = `powerstat -R -n -d0`
     try
+        cpucommand = `powerstat -R -n -d0`
         cpu = read(cpucommand, String);
         cpu = split(cpu,"\n")
         cpu = cpu[66][60:64]
-        
+            
         return parse(Float64,cpu)
     catch e
-        @info "powerstat not installed in your computer"
+        @info "powerstat not installed in your computer" #throw(NoPowerStat("there is no powerstat installed")) 
     end
-end
+end 
 
 
 #TODO: further fine tune the model
