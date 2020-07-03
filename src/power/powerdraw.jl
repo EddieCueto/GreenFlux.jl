@@ -1,11 +1,11 @@
 struct NoNvidiaSMI <: Exception
-    var::Symbol
+    var::String
 end
 
 Base.showerror(io::IO, e::NoNvidiaSMI) = print(io, e.var)
 
 struct NoPowerStat <: Exception
-    var::Symbol
+    var::String
 end
 
 Base.showerror(io::IO, e::NoPowerStat) = print(io, e.var)
@@ -87,8 +87,8 @@ function cpupowerdraw()
         cpu = cpu[66][60:64]
             
         return parse(Float64,cpu)
-    catch e
-        @info "powerstat not installed in your computer" #throw(NoPowerStat("there is no powerstat installed")) 
+    finally
+        throw(NoPowerStat("there is no powerstat installed")) #@info "powerstat not installed in your computer" 
     end
 end 
 
@@ -102,19 +102,24 @@ ratio of activated memory against the unactivated for the maximum power value an
 to hours.
 """
 function rampowerdraw()
-    ramcommand = `free`
-    powerused = Array{Float64}(undef,60)
-    for count in 1:60
-        ram = read(ramcommand, String);
-        ram = split(ram,"\n")
-        ram = split(ram[2]," ")
-        filter!(x->x≠"",ram)
-        usedram = parse(Float64,ram[3])
-        totalram = parse(Float64,ram[2])
-        powerused[count] = ((usedram*1.575)/totalram)*1.904
-        sleep(1)
+    try
+        ramcommand = `free`
+        powerused = Array{Float64}(undef,60)
+        for count in 1:60
+            ram = read(ramcommand, String);
+            ram = split(ram,"\n")
+            ram = split(ram[2]," ")
+            filter!(x->x≠"",ram)
+            usedram = parse(Float64,ram[3])
+            totalram = parse(Float64,ram[2])
+            powerused[count] = ((usedram*1.575)/totalram)*1.904
+            sleep(1)
+        end
+        return mean(powerused)
+    catch e
+    finally
+        return 0.0
     end
-    return mean(powerused)
 end
 
 
@@ -133,18 +138,28 @@ returns the average power consumption in kWh.
 """
 function avgpowerdraw()
     if has_cuda_gpu()
-        starttime = time()
-        g, pg, _ = gpupowerdraw()
-        pc = cpupowerdraw()
-        pr = rampowerdraw() 
-        endtime = time()
-        elapsedtime = (endtime - starttime)/3600
-        return 1.58*elapsedtime*(pc + pr + g*pg)/1000    
+        try
+            starttime = time()
+            g, pg, _ = gpupowerdraw()
+            pc = cpupowerdraw()
+            pr = rampowerdraw() 
+            endtime = time()
+            elapsedtime = (endtime - starttime)/3600
+            return 1.58*elapsedtime*(pc + pr + g*pg)/1000  
+        catch e 
+        finally
+            return 0.0
+        end 
     else
-        pc = cpupowerdraw()
-        pr = rampowerdraw() 
-        endtime = time()
-        elapsedtime = (endtime - starttime)/3600
-        return 1.58*elapsedtime*(pc + pr)/1000   
+        try
+            pc = cpupowerdraw()
+            pr = rampowerdraw() 
+            endtime = time()
+            elapsedtime = (endtime - starttime)/3600
+            return 1.58*elapsedtime*(pc + pr)/1000   
+        catch e
+        finally
+            return 0.0
+        end
     end
 end
