@@ -1,19 +1,3 @@
-struct NoNvidiaSMI <: Exception
-    var::String
-end
-
-struct NoPowerStat <: Exception
-    var::String
-end
-
-struct NoFree <: Exception
-    var::String
-end
-
-Base.showerror(io::IO, e::NoNvidiaSMI) = print(io, e.var)
-Base.showerror(io::IO, e::NoPowerStat) = print(io, e.var)
-Base.showerror(io::IO, e::NoFree) = print(io, e.var)
-
 """
     gpupowerdraw()::Float64
 
@@ -123,10 +107,26 @@ the number of available gpus.
 returns the average power consumption in kWh.
 """
 function avgpowerdraw()
+    g, pg, pc, pr = 0.0, 0.0, 0.0, 0.0
     starttime = time()
-    g, pg, _ = gpupowerdraw()
-    pc = cpupowerdraw()
-    pr = rampowerdraw() 
+    try
+        g, pg, _ = gpupowerdraw()
+    catch ex
+        println(ex.msg)
+        return 0.0
+    end
+    try
+        pc = cpupowerdraw()   
+    catch ex
+        println(ex.msg)
+        return 0.0
+    end
+    try
+        pr = rampowerdraw() 
+    catch ex
+        println(ex.msg)
+        return 0.0
+    end
     endtime = time()
     elapsedtime = (endtime - starttime)/3600
     return 1.58*elapsedtime*(pc + pr + g*pg)/1000  
