@@ -17,9 +17,11 @@ using Flux
     rn = RNN(3,6) 
     #maxo = Maxout(()->Dense(35, 27), 4)
     maxo = Maxout((12,12))
-    @test_throws Base.IOError GreenFlux.gpupowerdraw()
-    @test_throws Base.IOError GreenFlux.cpupowerdraw()
-    @test_throws Base.IOError GreenFlux.rampowerdraw()
+    if Sys.isapple()
+        @test_throws Base.IOError GreenFlux.gpupowerdraw()
+        @test_throws Base.IOError GreenFlux.cpupowerdraw()
+        @test_throws Base.IOError GreenFlux.rampowerdraw()
+    end
     if Sys.islinux()
         @test typeof(avgpowerdraw()) <: Float64  
     end
