@@ -1,23 +1,48 @@
 name: CI
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - master
+  pull_request:
 jobs:
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.allow-failure }}
     strategy:
+      fail-fast: false # don't stop CI even when one of them fails
       matrix:
         version:
-          - '1.0'
           - '1.4'
-          - 'nightly'
         os:
           - ubuntu-latest
           - macOS-latest
+          # - windows-latest # TODO: test on Windows
         arch:
           - x64
-          - x86
+          # - x86
+        allow-failure: [false]
+        # include:
+          # - version: 'nightly'
+          #   os: ubuntu-latest
+          #   arch: x64
+          #   allow-failure: true
+          # - version: 'nightly'
+          #   os: ubuntu-latest
+          #   arch: x86
+          #   allow-failure: true
+          # - version: 'nightly'
+          #   os: macOS-latest
+          #   arch: x64
+          #   allow-failure: true
+          # - version: 'nightly'
+          #   os: windows-latest
+          #   arch: x64
+          #   allow-failure: true
+          # - version: 'nightly'
+          #   os: windows-latest
+          #   arch: x86
+          #   allow-failure: true
         exclude:
           - os: macOS-latest
             arch: x86
@@ -27,39 +52,13 @@ jobs:
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      - uses: actions/cache@v1
-        env:
-          cache-name: cache-artifacts
-        with:
-          path: ~/.julia/artifacts
-          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-test-${{ env.cache-name }}-
-            ${{ runner.os }}-test-
-            ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@latest
       - uses: julia-actions/julia-runtest@latest
       - uses: julia-actions/julia-processcoverage@v1
       - uses: codecov/codecov-action@v1
         with:
-          file: lcov.info
-      - uses: julia-actions/julia-uploadcoveralls@latest
-        env:
-          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-  docs:
-    name: Documentation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
-        with:
-          version: '1'
-      - run: |
-          julia --project=docs -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
-      - run: julia --project=docs docs/make.jl
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          file: ./lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}

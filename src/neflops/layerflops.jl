@@ -34,6 +34,7 @@ function layerflops(layer::Dense,input::Tuple)
     return convert(Float64,((2*Mi*N - M)+bi)*noofopers*Fm), out
 end
 
+# TODO: Maxout for more that one layer Maxout
 function layerflops(layer::Maxout,input::Tuple)
     i = 0; j = 0; Fm = 1
     if length(input) == 3
