@@ -1,5 +1,5 @@
 <p align="center">
-<img width="400px" height="200px" src="GreenFlux.png"/>
+<img width="200px" height="200px" src="GreenFlux.png"/>
 </p>
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://EddieCueto.github.io/GreenFlux.jl/stable)
