@@ -17,3 +17,17 @@ To install just do:
 ```
 In the future I will add an expanded documentation.
 
+Tested Successfully On
+
+GPUs:
+
+    NVIDIA GTX 1050
+
+CPUs:
+
+    Intel(R) 
+
+OS:
+
+    Ubuntu 
+
