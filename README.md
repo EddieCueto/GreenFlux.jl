@@ -15,5 +15,18 @@ To install just do:
 ```julia
 ] add GreenFlux
 ```
-In the future I will add an expanded documentation.
+**Due to the limited hardware and driver accessibility this framework has been tested and works currently in Linux.**
 
+Tested Successfully On
+
+GPUs:
+
+    - NVIDIA GeForce GTX 1050
+
+CPUs:
+
+    - Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 
+
+OS:
+
+    - Ubuntu 18.04.1
