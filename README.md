@@ -21,13 +21,12 @@ Tested Successfully On
 
 GPUs:
 
-    NVIDIA GTX 1050
+    - NVIDIA GeForce GTX 1050
 
 CPUs:
 
-    Intel(R) 
+    - Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz 
 
 OS:
 
-    Ubuntu 
-
+    - Ubuntu 18.04.1
