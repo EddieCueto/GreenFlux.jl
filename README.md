@@ -15,7 +15,7 @@ To install just do:
 ```julia
 ] add GreenFlux
 ```
-In the future I will add an expanded documentation.
+**Due to the limited hardware and driver accessibility this framework has been tested and works currently in Linux.**
 
 Tested Successfully On
 
