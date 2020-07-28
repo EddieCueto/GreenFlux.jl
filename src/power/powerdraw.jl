@@ -34,17 +34,20 @@ function gpupowerdraw()
             usagestr = ""
             capstr = ""
             if g[5] == "N/A"
-                usagestr = "0.0"
+                usagestr = "0W"
             else
                 usagestr = usagestr * g[5]
             end
             if g[7] == "N/A"
-                capstr = "0.0"
+                capstr = "0W"
             else
                 capstr = capstr * g[7]
             end
-            powerdraw = vcat(powerdraw, parse(Float64,usagestr))
-            powercap = vcat(powercap, parse(Float64,capstr))
+            regexw = r"(\d+)"
+            wattusg = match(regexw,usagestr)
+            wattcap = match(regexw,capstr)
+            powerdraw = vcat(powerdraw, parse(Float64,wattusg.match))
+            powercap = vcat(powercap, parse(Float64,wattcap.match))
         end
         usage[count] = mean(powerdraw)
         cap[count] = mean(powercap)

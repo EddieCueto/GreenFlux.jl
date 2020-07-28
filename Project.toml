@@ -1,7 +1,7 @@
 name = "GreenFlux"
 uuid = "ccad5352-7643-4eb2-b711-e9c298e87bf0"
 authors = ["Eduardo Cueto Mendoza"]
-version = "0.1.0"
+version = "0.0.4"
 
 [deps]
 CUDAapi = "3895d2a7-ec45-59b8-82bb-cfc6a382f9b3"
