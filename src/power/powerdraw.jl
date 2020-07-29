@@ -34,17 +34,20 @@ function gpupowerdraw()
             usagestr = ""
             capstr = ""
             if g[5] == "N/A"
-                usagestr = "0.0"
+                usagestr = "0W"
             else
                 usagestr = usagestr * g[5]
             end
             if g[7] == "N/A"
-                capstr = "0.0"
+                capstr = "0W"
             else
                 capstr = capstr * g[7]
             end
-            powerdraw = vcat(powerdraw, parse(Float64,usagestr))
-            powercap = vcat(powercap, parse(Float64,capstr))
+            regexw = r"(\d+)"
+            wattusg = match(regexw,usagestr)
+            wattcap = match(regexw,capstr)
+            powerdraw = vcat(powerdraw, parse(Float64,wattusg.match))
+            powercap = vcat(powercap, parse(Float64,wattcap.match))
         end
         usage[count] = mean(powerdraw)
         cap[count] = mean(powercap)
@@ -73,20 +76,26 @@ end
     rampowerdraw()::Float64
 
 [Approximate RAM Power Draw](https://www.jedec.org/) the values are provided by the JEDEC we just take the 
-ratio of activated memory against the unactivated for the maximum power value and convert it 
-to hours.
+average of the total RAM with its Watt value to get the approximate power draw.  
 """
-function rampowerdraw()
-    ramcommand = `free`
+function rampowerdraw(ramtype="DDR3")
+    ramcommand = `free -m`
     powerused = Array{Float64}(undef,60)
     for count in 1:60
         ram = read(ramcommand, String);
         ram = split(ram,"\n")
         ram = split(ram[2]," ")
         filter!(x->x≠"",ram)
-        usedram = parse(Float64,ram[3])
         totalram = parse(Float64,ram[2])
-        powerused[count] = ((usedram*1.575)/totalram)*1.904
+        if ramtype == "DDR3"
+            powerused[count] = (totalram/1024)*0.3125
+        elseif ramtype == "DDR2"
+            powerused[count] = (totalram/1024)*0.625
+        elseif ramtype == "DDR"
+            powerused[count] = (totalram/1024)*6.5
+        else
+            error("$ramtype unrecognized RAM type.")
+        end
         sleep(1)
     end
     return mean(powerused)
@@ -105,8 +114,10 @@ the number of available gpus.
 `apd = 1.58*t*(pc + pr + g*pg)/1000`
 
 returns the average power consumption in kWh.
+
+By default it assumes you use `"DDR3"` memory but you can pass `"DDR2"` or `"DDR"` to get a better estimate.
 """
-function avgpowerdraw()
+function avgpowerdraw(freeram="DDR3")
     g, pg, pc, pr = 0.0, 0.0, 0.0, 0.0
     starttime = time()
     try
@@ -122,12 +133,12 @@ function avgpowerdraw()
         return 0.0
     end
     try
-        pr = rampowerdraw() 
+        pr = rampowerdraw(freeram) 
     catch ex
         println(ex.msg)
         return 0.0
     end
     endtime = time()
-    elapsedtime = (endtime - starttime)/3600
+    elapsedtime = (endtime - starttime)*0.0002777778
     return 1.58*elapsedtime*(pc + pr + g*pg)/1000  
 end
