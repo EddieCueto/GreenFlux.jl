@@ -11,15 +11,18 @@ end
 
 
 function getcpuusage()
-    cpuusage = pipeline(`top`, `grep \%Cpu`, "./src/neflops/cpuper")
-    currenttime = Dates.Time(Dates.now())
-    firstrun = 1
-    while (Dates.Time(Dates.now()) - currenttime).value / 1000000000.0 < 60.0
-        if firstrun == 1
-            asyresult = run(cpuusage,wait = false)
-            #println("I entered here once......")
-            #println((Dates.Time(Dates.now()) - currenttime).value / 1000000000.0)
-        end
-        firstrun += 1
+    tempfile = "./src/neflops/cpuper"
+    cpuusage = pipeline(`top`, `grep \%CPU`, tempfile)
+    ch = Channel(1)
+    put!(ch,@async run(cpuusage))
+    sleep(60)
+    if isready(ch)
+        take!(ch)
     end
+    data = open(tempfile) do text
+        read(text, String)
+    end
+    rm(tempfile)
+    data = split(data, "\n")
+    return data
 end
