@@ -6,6 +6,7 @@ using Flux: params, outdims, sigmoid, rrelu, elu, celu, softsign, softplus, tanh
             hardsigmoid, logsigmoid,swish, selu, softmax, logsoftmax, hardtanh,
             leakyrelu, relu6, lisht, tanhshrink, logcosh, mish, relu, trelu,
             softshrink, identity
+using Dates
 using Statistics: mean
 using CUDAapi: has_cuda_gpu 
 
@@ -16,6 +17,7 @@ include("neflops/measureutils.jl")
 include("neflops/layerflops.jl")
 include("neflops/gradientflops.jl")
 include("neflops/modelflops.jl")
+include("neflops/hwflops.jl")
 
 function __init__()
    @info "Finished loading GreenFlux..." 
