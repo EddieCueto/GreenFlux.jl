@@ -1,10 +1,19 @@
+function gotocompile(dev::Bool=false)
+    localpaths =  DEPOT_PATH
+    if !dev
+        comp_path = localpaths[1]*"/packages/GreenFlux/"
+        cd(comp_path)
+        comp_path = comp_path*readdir()[1]
+        cd(comp_path)
+    elseif dev
+        comp_path = localpaths[1]*"/dev/GreenFlux/"
+        cd(comp_path)
+    end
+end
+
 function runcpubenchmark(;x32::Bool=false,x64::Bool=true)
     startpath = pwd()
-    localpaths =  DEPOT_PATH
-    comp_path = localpaths[1]*"/packages/GreenFlux/"
-    cd(comp_path)
-    comp_path = comp_path*readdir()[1]
-    cd(comp_path)
+    gotocompile(true)
     if ((x32 || x64) && !(x32 && x64)) && x32
         benchpath = "./src/neflops/benchmarks/IntelCPU/linpack/runme_xeon32"
         getflopestimate = `sh $benchpath` 
