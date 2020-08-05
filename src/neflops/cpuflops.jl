@@ -1,14 +1,18 @@
-function runcpubenchmark(x32=false,x64=true)
-    startpath = pwd() 
+function runcpubenchmark(;x32::Bool=false,x64::Bool=true)
+    startpath = pwd()
+    localpaths =  DEPOT_PATH
+    comp_path = localpaths[1]*"/packages/GreenFlux/"
+    cd(comp_path)
+    comp_path = comp_path*readdir()[1]
+    cd(comp_path)
     if ((x32 || x64) && !(x32 && x64)) && x32
-        benchpath = pwd() * "/src/neflops/benchmarks/IntelCPU/linpack/"
-        cd(benchpath)
-        getflopestimate = `sh runme_xeon32` 
+        benchpath = "./src/neflops/benchmarks/IntelCPU/linpack/runme_xeon32"
+        getflopestimate = `sh $benchpath` 
         run(getflopestimate);
-        flopstring = open("lin_xeon32.txt") do f
+        flopstring = open(benchpath*"lin_xeon32.txt") do f
             read(f,String)
         end
-        rm("lin_xeon32.txt")
+        rm("./lin_xeon32.txt")
         resultstring = split(flopstring, "\n")
         startidx = Int8[] 
         endidx = Int8[]
@@ -33,20 +37,18 @@ function runcpubenchmark(x32=false,x64=true)
             push!(avgflops,parse(Float64, num[5]))
         end
         approxflops = mean(avgflops)
-        savepath = startpath * "/src/neflops/"
-        cd(savepath)
-        open("cpuflops", "w") do f
+        savepath = "./src/neflops/"
+        open(savepath*"cpuflops", "w") do f
             write(f, string(approxflops))
         end
     elseif ((x64 || x32) && !(x64 && x32)) && x64
-        benchpath = pwd() * "/src/neflops/benchmarks/IntelCPU/linpack/"
-        cd(benchpath)
-        getflopestimate = `sh runme_xeon64` 
+        benchpath = "./src/neflops/benchmarks/IntelCPU/linpack/runme_xeon64"
+        getflopestimate = `sh $benchpath` 
         run(getflopestimate);
-        flopstring = open("lin_xeon64.txt") do f
+        flopstring = open("./lin_xeon64.txt") do f
             read(f,String)
         end
-        rm("lin_xeon64.txt")
+        rm(benchpath*"lin_xeon64.txt")
         resultstring = split(flopstring, "\n")
         startidx = Int8[] 
         endidx = Int8[]
@@ -71,16 +73,14 @@ function runcpubenchmark(x32=false,x64=true)
             push!(avgflops,parse(Float64, num[5]))
         end
         approxflops = mean(avgflops)
-        savepath = startpath * "/src/neflops/"
-        cd(savepath)
-        open("cpuflops", "w") do f
+        savepath = "./src/neflops/"
+        open(savepath*"cpuflops", "w") do f
             write(f, string(approxflops))
         end
-        cd(startpath)
     else
         error("Not an allowed combination")
     end
-
+    cd(startpath)
 end
 
 function getcpuclock()
