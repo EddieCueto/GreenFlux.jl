@@ -11,14 +11,16 @@ using Statistics: mean
 using CUDA
 using CUDA: has_cuda_gpu 
 
-export avgpowerdraw, modelflops
+export avgpowerdraw, modelflops, cpuflops
 
 include("power/powerdraw.jl")
 include("neflops/measureutils.jl")
 include("neflops/layerflops.jl")
 include("neflops/gradientflops.jl")
 include("neflops/modelflops.jl")
+include("neflops/benchmark.jl")
 include("neflops/cpuflops.jl")
+include("utils.jl")
 
 function __init__()
    @info "Finished loading GreenFlux..." 

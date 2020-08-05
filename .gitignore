@@ -3,3 +3,6 @@
 *.jl.mem
 /docs/build/
 .vscode/*
+cpudata
+cpuusg
+tempscript.sh
