@@ -21,7 +21,7 @@ function processcpudata(nosamples = 60)
     data = open("cpudata") do f
         read(f,String)
     end
-    rm("cpudata")
+    #rm("cpudata")
     data = split(data, "\n")
     cpudata = Array{String}[]
     for m in data
@@ -29,7 +29,9 @@ function processcpudata(nosamples = 60)
     end
     cpuusg = Float64[]
     for d in cpudata[1:nosamples]
-        push!(cpuusg, parse(Float64,d[2]) + parse(Float64,d[5]))
+        if !isempty(d)
+            push!(cpuusg, parse(Float64,d[3]) + parse(Float64,d[6]))
+        end
     end
     cd(startpath)
     return cpuusg
@@ -39,7 +41,7 @@ end
 """
 Returns a estimation of the GFLOPs that were performed during the functions runtime
 """
-function cpugflops(nosamples = 60)
+function cpuflops(nosamples = 60)
     startpath = pwd()
     compath = gotocompile(true)
     cd(compath)

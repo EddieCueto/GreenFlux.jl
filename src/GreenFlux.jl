@@ -18,7 +18,7 @@ include("neflops/measureutils.jl")
 include("neflops/layerflops.jl")
 include("neflops/gradientflops.jl")
 include("neflops/modelflops.jl")
-include("neflops/benchmark.jl")
+include("neflops/benchmarks/IntelCPU/cpubenchmark.jl")
 include("neflops/cpuflops.jl")
 include("utils.jl")
 
