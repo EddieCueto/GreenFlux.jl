@@ -1,3 +1,5 @@
+using CUDA
+
 A32 = CUDA.rand(Float32,3,3);
 B32 = CUDA.rand(Float32,3,3);
 A64 = CUDA.rand(Float64,3,3);
